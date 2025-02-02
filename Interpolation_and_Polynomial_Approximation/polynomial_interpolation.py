@@ -1,3 +1,4 @@
+'''
 from colors import bcolors
 from matrix_utility import *
 
@@ -121,3 +122,105 @@ if __name__ == '__main__':
     print(bcolors.OKBLUE, "Finding an approximation to the point: ", bcolors.ENDC, x,'\n')
     polynomialInterpolation(table_points, x)
     print(bcolors.OKBLUE, "\n---------------------------------------------------------------------------\n", bcolors.ENDC)
+
+'''
+
+
+
+
+'''  AFTER REFACTOR'''
+
+
+
+import numpy as np
+from colors import bcolors
+from matrix_utility import *
+
+
+class GaussJordanSolver:
+    """Handles solving a system of equations using Gauss-Jordan Elimination."""
+
+    @staticmethod
+    def solve(matrix, vector):
+        """Solves Ax = b using Gauss-Jordan elimination."""
+        matrix, vector = RowXchange(matrix, vector)
+        inverse_matrix = InverseMatrix(matrix, vector)
+        return MulMatrixVector(inverse_matrix, vector)
+
+
+class LUSolver:
+    """Handles solving Ax = b using LU decomposition."""
+
+    @staticmethod
+    def solve(matrix, vector):
+        """Performs LU decomposition and solves Ax = b."""
+        U = MakeIMatrix(len(matrix), len(matrix))
+        for i in range(len(matrix[0])):
+            matrix, vector = RowXchageZero(matrix, vector)
+            for j in range(i + 1, len(matrix)):
+                elementary = MakeIMatrix(len(matrix[0]), len(matrix))
+                elementary[j][i] = -matrix[j][i] / matrix[i][i]
+                matrix = MultiplyMatrix(elementary, matrix)
+        return matrix
+
+
+class LinearSystemSolver:
+    """Selects the best method to solve a linear system."""
+
+    @staticmethod
+    def solve(A, b):
+        detA = Determinant(A, 1)
+        print(bcolors.YELLOW, "\nDET(A) =", detA)
+
+        if detA != 0:
+            print("CondA =", Cond(A, InverseMatrix(A, b)), bcolors.ENDC)
+            print(bcolors.OKBLUE, "\nNon-Singular Matrix - Performing Gauss-Jordan Elimination", bcolors.ENDC)
+            return GaussJordanSolver.solve(A, b)
+        else:
+            print("Singular Matrix - Performing LU Decomposition\n")
+            return LUSolver.solve(A, b)
+
+
+class PolynomialInterpolator:
+    """Handles polynomial interpolation based on given points."""
+
+    def __init__(self, table_points):
+        """Initialize with a set of points."""
+        self.table_points = table_points
+
+    def interpolate(self, x):
+        """Interpolates a polynomial and approximates the value at x."""
+        matrix = [[point[0] ** i for i in range(len(self.table_points))] for point in self.table_points]
+        b = [[point[1]] for point in self.table_points]
+
+        print(bcolors.OKBLUE, "Matrix from points:", bcolors.ENDC, '\n', np.array(matrix))
+        print(bcolors.OKBLUE, "\nb vector:", bcolors.ENDC, '\n', np.array(b))
+
+        matrix_sol = LinearSystemSolver.solve(matrix, b)
+        result = sum(matrix_sol[i][0] * (x ** i) for i in range(len(matrix_sol)))
+
+        print(bcolors.OKBLUE, "\nThe polynomial:", bcolors.ENDC)
+        print('P(X) = ' + ' + '.join([f'({matrix_sol[i][0]}) * x^{i}' for i in range(len(matrix_sol))]))
+        print(bcolors.OKGREEN, f"\nResult of P(X={x}):", bcolors.ENDC)
+        print(result)
+
+        return result
+
+
+if __name__ == '__main__':
+    #  Problem 3: Given data points
+    table_points = [
+        (0.35, -213.5991), (0.4, -204.4416), (0.55, -194.9375),
+        (0.65, -185.0256), (0.7, -174.6711), (0.85, -163.8656), (0.9, -152.6271)
+    ]
+    x = 0.75  # The point we need to approximate
+
+    print(bcolors.OKBLUE, "----------------- Polynomial Interpolation -----------------\n", bcolors.ENDC)
+    print(bcolors.OKBLUE, "Table Points:", bcolors.ENDC, table_points)
+    print(bcolors.OKBLUE, "Finding an approximation for x =", bcolors.ENDC, x, '\n')
+
+    interpolator = PolynomialInterpolator(table_points)
+    result = interpolator.interpolate(x)
+
+    print(bcolors.OKBLUE, "\n-----------------------------------------------------------\n", bcolors.ENDC)
+

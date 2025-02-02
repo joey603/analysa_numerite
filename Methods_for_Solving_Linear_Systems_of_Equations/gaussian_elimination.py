@@ -1,3 +1,4 @@
+'''
 import numpy as np
 from colors import bcolors
 from matrix_utility import swap_row
@@ -91,3 +92,11 @@ if __name__ == '__main__':
         print(bcolors.OKBLUE,"\nSolution for the system:")
         for x in result:
             print("{:.6f}".format(x))
+
+'''
+
+
+
+'''  AFTER REFACTOR'''
+
+

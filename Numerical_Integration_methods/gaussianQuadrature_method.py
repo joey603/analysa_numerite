@@ -1,3 +1,4 @@
+'''
 import math
 from math import sqrt
 import numpy as np
@@ -71,3 +72,61 @@ if __name__ == '__main__':
     for i in range(len(results)):
         print(f'-Result number {i+1} : {results[i]}')
     print(bcolors.OKBLUE,'\nIntegral value is', res, bcolors.ENDC) #input intervals and tolerance here
+'''
+
+
+
+
+'''  AFTER REFACTOR'''
+
+import math
+import numpy as np
+from colors import bcolors
+
+
+class QuadratureMethod:
+    """Base class for numerical integration methods."""
+
+    def integrate(self, f, a, b, n):
+        """To be implemented in subclasses."""
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+class GaussianQuadrature(QuadratureMethod):
+    """Gaussian Quadrature implementation."""
+
+    def integrate(self, f, a, b, n):
+        """Performs Gaussian Quadrature for numerical integration."""
+
+        # Get nodes and weights for Gaussian Quadrature
+        nodes, weights = np.polynomial.legendre.leggauss(n)
+
+        # Transform nodes to fit the [a, b] interval
+        transformed_nodes = 0.5 * (b - a) * nodes + 0.5 * (a + b)
+
+        # Compute weighted sum for the integral approximation
+        integral = sum(weights[i] * f(transformed_nodes[i]) for i in range(n))
+        integral *= 0.5 * (b - a)
+
+        return integral
+
+
+if __name__ == '__main__':
+    #  Function from the PDF (Problem 1)
+    def problem_function(x):
+        return (x * math.exp(-x**2 + 5*x)) * (2*x**2 - 3*x - 5)
+
+    #  Problem 1 parameters
+    a, b = 0.5, 1  # Integration range
+    n = 5  # Number of Gaussian points (typically 3-5 for accuracy)
+
+    print(f"Applying Gaussian Quadrature with {n} points")
+
+    #  Compute the integral using Gaussian Quadrature
+    gaussian = GaussianQuadrature()
+    integral_result = gaussian.integrate(problem_function, a, b, n)
+
+    print(bcolors.OKBLUE,
+          f"Approximated definite integral for Problem 1 using Gaussian Quadrature in range [{a}, {b}] is {integral_result}",
+          bcolors.ENDC)
+
