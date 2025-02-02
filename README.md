@@ -1,11 +1,6 @@
-# Numerical-Analysis-2023
+# Numerical-Analysis-Hackathon 
 
-<img src="https://github.com/lihiSabag/Numerical-Analysis-2023/blob/a895d4d59311bc17c04d25ced37daab2dc38812d/numerical%20anlysis.jpg" align="center"
-     alt="logo" width="600" height="400">
 
-This repository is part of the academic course - Numerical-Analysis in [SCE - Shamoon College of Engineering](https://sce.ac.il).
-
-The repo contains an implementation of methods that will be learned within the course to solve numerical analysis problems. Each method has an explanation in a PDF file and a runnable example to assist in understanding and applying these methods. 
 
 ## Implemented Methods
 The following numerical methods are currently implemented in this repository:
